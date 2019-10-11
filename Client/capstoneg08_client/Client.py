@@ -2,6 +2,8 @@ import socket
 import sys
 import threading
 
+from capstoneg08_servermessagehandler import ServerMessageHandler
+
 class Client(threading.Thread):
     isConnected = False
     stopThisThread = False
@@ -9,11 +11,12 @@ class Client(threading.Thread):
     portNumber = 8888;
     host = 'localhost'
     
-    def _inti_ (self, portNumber, host):
+    def _init_ (self, portNumber, host):
+        threading.Thread.__init__(self)
         self.portNumber = portNumber
         self.host = host
-        self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) 
-        threading.Thread.__init__(self)
+        self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        
     
     def connectToServer(self):
         myClientThread = Client(self.ip, self.port)
@@ -28,6 +31,9 @@ class Client(threading.Thread):
         except socket.error as SocketError:
             print("Unable to disconnect from server", repr(SocketError))
     
+    def sendMessageToServer(self, msg):
+        self.clientSocket.send(msg)
+    
     def stopThread():
         stopThisThread = True
     
@@ -39,10 +45,17 @@ class Client(threading.Thread):
         try:
             isConnected = True
             self.clientSocket.connect(self.host, self.portNumber)
+            myServerMessageHandler = ServerMessageHandler(self.clientSocket)
             stopThisThread = False
         except socket.error as SocketError:
             print("Unable to connect to server", repr(SocketError))
         
         # handle server messages 
         while stopThisThread == False:
+            try:
+                msg = self.clientSocket.recv()
+            except BlockingIOError:
+                print("Unable to receive message.", repr(BlockingIOError))
+            finally:
+                myServerMessageHandler.handleServerMessage(msg)
             break
