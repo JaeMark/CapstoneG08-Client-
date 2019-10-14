@@ -1,21 +1,22 @@
+#!/usr/bin/python3
+
 import socket
 import sys
 import threading
 
-from capstoneg08_servermessagehandler import ServerMessageHandler
+from capstoneg08_servermessagehandler.ServerMessageHandler import ServerMessageHandler
 
 class Client(threading.Thread):
     isConnected = False
     stopThisThread = False
     
-    portNumber = 8888;
-    host = 'localhost'
-    
-    def _init_ (self, portNumber, host):
+    def __init__(self, portNumber, host):
         threading.Thread.__init__(self)
         self.portNumber = portNumber
         self.host = host
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.myServerMessageHandler = ServerMessageHandler(self)
+        
         
     
     def connectToServer(self):
@@ -45,7 +46,7 @@ class Client(threading.Thread):
         try:
             isConnected = True
             self.clientSocket.connect(self.host, self.portNumber)
-            myServerMessageHandler = ServerMessageHandler(self.clientSocket)
+            self.myServerMessageHandler = ServerMessageHandler(self.clientSocket)
             stopThisThread = False
         except socket.error as SocketError:
             print("Unable to connect to server", repr(SocketError))
@@ -57,5 +58,5 @@ class Client(threading.Thread):
             except BlockingIOError:
                 print("Unable to receive message.", repr(BlockingIOError))
             finally:
-                myServerMessageHandler.handleServerMessage(msg)
+                self.myServerMessageHandler.handleServerMessage(msg)
             break
