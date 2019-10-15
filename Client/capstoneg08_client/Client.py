@@ -7,12 +7,16 @@ import threading
 from capstoneg08_servermessagehandler.ServerMessageHandler import ServerMessageHandler
 
 class Client(threading.Thread):    
-    def __init__(self, host, portNumber):
+    def __init__(self, buffSize, host, portNumber):
         threading.Thread.__init__(self)
-        self.isConnected = False
-        self.stopThisThread = False
+        
+        self.buffSize = buffSize
         self.host = host
         self.portNumber = portNumber
+        
+        self.isConnected = False
+        self.stopThisThread = False
+        
         self.myServerMessageHandler = ServerMessageHandler(self)
 
     def disconnectFromServer(self):
@@ -44,9 +48,10 @@ class Client(threading.Thread):
             print("Unable to connect to server:", repr(SocketError))
         
         # handle server messages 
+        msg = ''
         while self.stopThisThread == False:
             try:
-                msg = self.clientSocket.recv()
+                msg = self.clientSocket.recv(self.buffSize)
             except BlockingIOError:
                 print("Unable to receive message.", repr(BlockingIOError))
             finally:

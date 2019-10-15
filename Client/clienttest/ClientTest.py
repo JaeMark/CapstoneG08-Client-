@@ -3,8 +3,10 @@ import threading
 from capstoneg08_client.Client import Client
 from capstoneg08_usercommandhandler.UserCommandHandler import UserCommandHandler
 
+BUFF_SIZE = 1024
+
 def main():
-    myClient = Client('localhost', 8080)
+    myClient = Client(BUFF_SIZE, 'localhost', 8080)
     myClient.start()
 
     # connection test
@@ -13,13 +15,11 @@ def main():
         print("Client is running")
     if not isConnected:
         print("Client is not running")
-        
-    
-    #print(myClient.isConnected)
-    #myUserCommandHandler = UserCommandHandler(myClient)
-    #txt = input("Enter command: ")
-    #print("Nice to meet you! Your command was: " + txt)
-    #if(myClient.isConnected == True):
+
+    myUserCommandHandler = UserCommandHandler(myClient)
+    txt = input("Enter command: ")
+    myUserCommandHandler.handleUserCommand(txt)
+    myUserCommandHandler.start()
     
     
 main()
