@@ -6,24 +6,21 @@ import threading
 
 from capstoneg08_servermessagehandler.ServerMessageHandler import ServerMessageHandler
 
-class Client(threading.Thread):
-    isConnected = False
-    stopThisThread = False
-    
+class Client(threading.Thread):    
     def __init__(self, portNumber, host):
         threading.Thread.__init__(self)
+        self.isConnected = False
+        self.stopThisThread = False
         self.portNumber = portNumber
         self.host = host
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.myServerMessageHandler = ServerMessageHandler(self)
-        
-        
     
     def connectToServer(self):
         myClientThread = Client(self.ip, self.port)
         myClientThread.start()
         return True
-    
+
     def disconnectFromServer(self):
         try:
             isConnected = False
@@ -36,15 +33,15 @@ class Client(threading.Thread):
         self.clientSocket.send(msg)
     
     def stopThread():
-        stopThisThread = True
+        self.stopThisThread = True
     
-    def isConnceted():
-        return isConnected
+    def isConnected(self):
+        return self.isConnected
     
     def run(self):
         # create client socket
         try:
-            isConnected = True
+            self.isConnected = True
             self.clientSocket.connect(self.host, self.portNumber)
             self.myServerMessageHandler = ServerMessageHandler(self.clientSocket)
             stopThisThread = False
