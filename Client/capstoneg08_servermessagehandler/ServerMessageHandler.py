@@ -7,7 +7,7 @@ class ServerMessageHandler():
     
     def handleServerMessage(self, msg):
         serverMessage = ""
-        serverMessage = msg 
+        serverMessage = msg.decode()
         print(serverMessage);
         return
     

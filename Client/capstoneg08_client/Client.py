@@ -25,10 +25,10 @@ class Client(threading.Thread):
             self.clientSocket.close()
             self.clientSocket is None
         except socket.error as SocketError:
-            print("Unable to disconnect from server", repr(SocketError))
+            print("Unable to disconnect from server, because ", repr(SocketError))
     
     def sendMessageToServer(self, msg):
-        self.clientSocket.send(msg)
+        self.clientSocket.sendall(msg)
     
     def stopThread(self):
         self.stopThisThread = True
@@ -45,7 +45,7 @@ class Client(threading.Thread):
             self.myServerMessageHandler = ServerMessageHandler(self.clientSocket)
             self.stopThisThread = False
         except socket.error as SocketError:
-            print("Unable to connect to server:", repr(SocketError))
+            print("Unable to connect to server, because ", repr(SocketError))
         
         # handle server messages 
         msg = ''
@@ -53,7 +53,7 @@ class Client(threading.Thread):
             try:
                 msg = self.clientSocket.recv(self.buffSize)
             except BlockingIOError:
-                print("Unable to receive message.", repr(BlockingIOError))
+                print("Unable to receive message, because ", repr(BlockingIOError))
             finally:
                 self.myServerMessageHandler.handleServerMessage(msg)
             break
